@@ -3,13 +3,24 @@
 
 const SHEET_NAME = 'RSVPs';
 
+function doGet(e) {
+  return handleRequest(e.parameter);
+}
+
 function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
+    return handleRequest(data);
+  } catch (err) {
+    return handleRequest(e.parameter);
+  }
+}
+
+function handleRequest(data) {
+  try {
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME)
       || SpreadsheetApp.getActiveSpreadsheet().insertSheet(SHEET_NAME);
 
-    // Add header row if sheet is empty
     if (sheet.getLastRow() === 0) {
       sheet.appendRow(['Timestamp', 'Name', 'Email', 'Adults Attending']);
       sheet.getRange(1, 1, 1, 4).setFontWeight('bold');
